@@ -3,11 +3,18 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { AppDataSource } from './config/data-source';
 import carPartRoutes from './routes/CarPartRoutes'
+import cors from 'cors';
 
-dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(cors({
+    origin: 'http://localhost:5173', // разрешаем фронту
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type'],
+}));
+dotenv.config();
 app.use(express.json())
 app.use("/parts", carPartRoutes);
 app.get('/', (req, res) => {

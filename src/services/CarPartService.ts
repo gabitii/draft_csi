@@ -10,10 +10,29 @@ import { Response } from 'express';
 export class CarPartService {
     async getAllParts(): Promise<CarPart[]> {
         console.log('getAllParts() called');
-        return carPartRepo.find(<FindManyOptions<CarPart>>{
-            where: { parent: IsNull() },
-            relations: ['children'],
+        const roots = await carPartRepo.find({
+            where: {parent: IsNull()},
         });
+        const tree: CarPart[] =[];
+        for (const root of roots){
+            tree.push(await this.loadTree(root));
+        }
+        return tree;
+    }
+
+    private async loadTree(part: CarPart): Promise<CarPart>{
+        const children = await carPartRepo.find({
+            where: {parent: {id: part.id}},
+            relations:['parent'],
+        });
+        if(!children){
+            return part;
+        }
+        part.children =[];
+        for (const child of children){
+            part.children.push(await this.loadTree(child));
+        }
+        return part;
     }
 
     async createPart(data: {
