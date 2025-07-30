@@ -41,13 +41,14 @@ const removeAll = async() =>{
 }
 const addPart = async () => {
   console.log('Добавляем деталь:', name.value, price.value, quantity.value);
-  if (!name.value || !price.value || !quantity.value) return;
+  if (!name.value || price.value === '' || !quantity.value) return;
 
   try {
     await createPart({
       name: name.value,
       price: +price.value,
       quantity: +quantity.value,
+      basePrice: +price.value,
       parentId: parentId.value || null
     });
     name.value = '';

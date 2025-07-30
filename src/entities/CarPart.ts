@@ -20,6 +20,9 @@ export class CarPart {
     @Column()
     price!: number;
 
+    @Column( { default: 0 })
+    basePrice!: number;
+
     @ManyToOne(() => CarPart, (part) => part.children, {onDelete: "CASCADE"})
     @JoinColumn({ name: 'parentId' })
     parent!: CarPart;

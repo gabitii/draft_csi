@@ -45,6 +45,7 @@ export class CarPartService {
         part.name = data.name;
         part.price = data.price;
         part.quantity = data.quantity;
+        part.basePrice = part.price;
 
         if (data.parentId) {
             const parent = await carPartRepo.findOneBy({ id: data.parentId });
@@ -88,11 +89,10 @@ export class CarPartService {
         const parent = await carPartRepo.findOne({
             where: { id: part.parentId },
         });
-
         if (!parent || !part.parentId) {
             return part.price;
         }
-        parent.price += part.price * part.quantity;
+        parent.price = parent.basePrice + part.price * part.quantity;
 
         await carPartRepo.save(parent);
 
@@ -115,7 +115,7 @@ export class CarPartService {
     }
 
     async clearAllParts(): Promise<void> {
-        await carPartRepo.clear(); // удаляет все записи в таблице car_part
+        await carPartRepo.clear();
     }
 
     async exportParts(format: 'xlsx' | 'pdf', res: Response): Promise<void>{
